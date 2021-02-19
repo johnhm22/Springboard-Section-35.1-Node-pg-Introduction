@@ -30,6 +30,7 @@ router.get('/:id', async function getCompany(req, res, next){
 router.post('/', async function addInvoice(req, res, next){
     try{
         const { name, description } = req.body;
+        console.log(req.body);
         const results = await db.query(
         'INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) VALUES ($1, $2, $3, $4, $5) RETURNING id, comp_code, amt, paid, add_date, paid_date', [comp_code, amt, paid, add_date, paid_date]);
     return res.status(201).json({ invoice: results.rows[0] });
@@ -37,6 +38,15 @@ router.post('/', async function addInvoice(req, res, next){
     return next(err);
     }
 })
+
+// {
+//     "comp_code": "Acorn",
+//     "amt": 2000,
+//     "paid": true,
+//     "add_date": "2021-02-18T00:00:00.000Z",
+//     "paid_date": "018-01-01T00:00:00.000Z"
+// }
+
 
 
 router.patch('/:id', async function updateInvoice(req, res, next){
@@ -68,6 +78,20 @@ router.delete('/:id', async function deleteInvoice(req, res, next){
     }
 })
 
+
+router.get('/companies/:code', async function getCompanyAndInvoices(req, res, next){
+    try{
+        const {code} = req.params;
+        const results = await db.query(
+        'SELECT * FROM invoices JOIN companies ON invoices.comp_code = companies.code WHERE companies.code = $1', [code]);
+        if(results.rows.length === 0){
+            throw new ExpressError(`Company with id ${code} could not be found`, 404);
+        }
+    return res.json({ company: {code, name, description, invoices: [{id, comp_code, amt, paid, add_date, paid_date}]} });
+    } catch(err) {
+    return next(err);
+    }
+});
 
 
 
