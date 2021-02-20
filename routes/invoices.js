@@ -29,7 +29,7 @@ router.get('/:id', async function getCompany(req, res, next){
 
 router.post('/', async function addInvoice(req, res, next){
     try{
-        const { name, description } = req.body;
+        const { comp_code, amt, paid, add_date, paid_date } = req.body;
         console.log(req.body);
         const results = await db.query(
         'INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) VALUES ($1, $2, $3, $4, $5) RETURNING id, comp_code, amt, paid, add_date, paid_date', [comp_code, amt, paid, add_date, paid_date]);
