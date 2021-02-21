@@ -29,11 +29,11 @@ router.get('/:id', async function getCompany(req, res, next){
 
 router.post('/', async function addInvoice(req, res, next){
     try{
-        const { comp_code, amt, paid, add_date, paid_date } = req.body;
+        const { comp_code, amt } = req.body;
         console.log(req.body);
         const results = await db.query(
-        'INSERT INTO invoices (comp_code, amt, paid, add_date, paid_date) VALUES ($1, $2, $3, $4, $5) RETURNING id, comp_code, amt, paid, add_date, paid_date', [comp_code, amt, paid, add_date, paid_date]);
-    return res.status(201).json({ invoice: results.rows[0] });
+        'INSERT INTO invoices (comp_code, amt) VALUES ($1, $2) RETURNING id, comp_code, amt, paid, add_date, paid_date', [comp_code, amt]);
+    return res.status(201).json({ "invoice": results.rows[0] });
     } catch(err) {
     return next(err);
     }
@@ -49,12 +49,18 @@ router.post('/', async function addInvoice(req, res, next){
 
 
 
-router.patch('/:id', async function updateInvoice(req, res, next){
+router.put('/:id', async function updateInvoice(req, res, next){
     try{
         const { id } = req.params;
+        console.log("This is the id: ", id);
         const { comp_code, amt, paid, add_date, paid_date } = req.body;
+        console.log("This is the req.body: ", req.body)
+        if(paid === true){
+            let today = new Date();
+            paid_date = today;
+        };
         const results = await db.query(
-        'UPDATE companies SET comp_code=$1, amt=$2, paid=$3, add_date=$4, paid_date=$5 WHERE id=$6 RETURNING comp_code, amt, paid, add_date, paid_date', [comp_code, amt, paid, add_date, paid_date]);
+        'UPDATE companies SET comp_code=$1, amt=$2, paid=$3, add_date=$4, paid_date=$5 WHERE id=$6 RETURNING id, comp_code, amt, paid, add_date, paid_date', [comp_code, amt, paid, add_date, paid_date, id]);
         if(!id){
             throw new ExpressError(`Invoice with id ${id} could not be found`, 404);
         }

@@ -1,6 +1,7 @@
 const express = require("express");
 const ExpressError = require("./expressError");
 const dotenv = require('dotenv');
+const slugify = require('slugify');
 
 const bodyParser = require("body-parser");
 
@@ -17,6 +18,9 @@ app.use("/companies", compRoutes);
 
 const invRoutes = require("./routes/invoices");
 app.use("/invoices", invRoutes);
+
+const indRoutes = require("./routes/industries");
+app.use("/industries", indRoutes);
 
 
 
