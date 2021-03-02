@@ -35,22 +35,6 @@ router.post('/', async function addIndustry(req, res, next){
 //     "industry": "Telecommunications"
 // }
 
-router.post('/companies', async function addIndustry(req, res, next){
-    console.log("In the POST route");
-    try{
-        const { industries_code, companies_code } = req.body;
-        console.log("Here is the req.body", req.body);
-        const results = await db.query(
-        `INSERT INTO industries_companies (industries_code, companies_code) VALUES ($1, $2) RETURNING industries_code, companies_code`, [industries_code, companies_code]);
-    return res.status(201).json({ industry_company: results.rows[0] });
-    } catch(err) {
-    return next(err);
-    }
-});
 
-// {
-//     "industries_code": "ACCT",
-//     "companies_code": "Acorn"
-// }
 
 module.exports = router;

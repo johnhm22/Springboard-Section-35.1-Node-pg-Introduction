@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db");
 const ExpressError = require("../expressError");
+const slugify = require('slugify');
 
 
 router.get('/', async function getAllCompanies(req, res, next){
@@ -35,13 +36,19 @@ router.get('/:code', async function getCompany(req, res, next){
 router.post('/', async function addCompany(req, res, next){
     console.log("In the POST route");
     try{
-        const { name, description } = req.body;
+        const { code, name, description } = req.body;
+        console.log(code);
+        console.log(name);
+        console.log(description);
+        // if(!name || !description){
+        //     throw new ExpressError("Missing required data", 400);
+        // }
         console.log("Here is the req.body", req.body);
-        const code = slugify(name, {
-            strict: true,
-            lower: true,
-            locale: 'en'
-        });
+        // const code = slugify(name, {
+        //     strict: true,
+        //     lower: true,
+        //     locale: 'en'
+        // });
         const results = await db.query(
         `INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING code, name, description`, [code, name, description]);
     return res.status(201).json({ company: results.rows[0] });
